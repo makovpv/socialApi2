@@ -1,0 +1,64 @@
+﻿<h1>User map</h1>
+<p>Карта интересов пользователя по категориям и количеством репостов за один год</p>
+<div class="row">
+    <div class="col-sm-6 form-group">
+        <label for="usr">User:</label>
+        <input type="text" class="form-control" placeholder="user short name" id="usr" [value]="userName" (input)="userName = $event.target.value">
+        <label for="usr">Analysis Period:</label>
+        <input type="number" class="form-control" placeholder="analysis period depth in days" id="period" [value]="period" (input)="period = $event.target.value">
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <!--<input type="button" title="Get map" (click)="getUser()" class="btn-primary" ng-disabled="true"/>-->
+        <button (click)="getUser()" class="btn-primary" ng-disabled="true">Get map</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12" *ngIf="user">
+        <label>{{user.firstName}} {{user.lastName}} ({{user.birthDate|date:'dd-MM-yyyy'}})</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div>&nbsp;</div>
+        <label *ngIf="isRepostLoading"><em>Loading...</em></label>
+        <label *ngIf="reposts && !isRepostLoading">Репосты</label>
+        <table class='table' *ngIf="reposts && !isRepostLoading">
+            <thead>
+                <tr>
+                    <th>Наименование категории</th>
+                    <th>Количество репостов</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let repostCategorie of reposts">
+                    <td>{{ repostCategorie.name }}</td>
+                    <td>{{ repostCategorie.actionCount }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    
+    <div class="col-sm-12">
+        <div>&nbsp;</div>
+        <label *ngIf="isLikeLoading"><em>Loading...</em></label>
+        <label *ngIf="likes && !isLikeLoading">Лайки</label>
+        <table class='table' *ngIf="likes && !isLikeLoading">
+            <thead>
+                <tr>
+                    <th>Наименование категории</th>
+                    <th>Количество лайков</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let likeCategorie of likes">
+                    <td>{{ likeCategorie.name }}</td>
+                    <td>{{ likeCategorie.actionCount }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
