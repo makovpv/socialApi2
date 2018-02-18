@@ -45,22 +45,12 @@ namespace SPA.Controllers
 
         }
 
-        //[HttpGet("repost/{user}")]
-        //public IEnumerable<Categorie> FavoriteRepostCategories(string user)
-        //{
-        //    var result = new List<Categorie>();
-
-        //    var vkProvider = new VKProvider(appId, login, password, new MyLogger());
-
-        //    return Main.GetUserFavoriteCategories(vkProvider, _context, user);
-        //}
-
         [HttpGet("like/{userId}")]
         public IEnumerable<Categorie> LikeCategories(long userId)
         {
             var vkProvider = new VKProvider(appId, login, password, new MyLogger());
 
-            return Main.GetUserLikeCategories(vkProvider, _context, userId);
+            return Main.GetUserLikeCategories(vkProvider, userId);
         }
 
         [HttpGet("person/{user}")]

@@ -60,17 +60,6 @@ export class UserMapComponent {
                     console.error(error);
                 });
 
-        //this.isRepostLoading = true;
-        //this.http.get(this.baseUrl + 'api/SocialData/repost/' + this.userName).subscribe(
-        //    result => {
-        //        this.isRepostLoading = false;
-        //        this.reposts = result.json() as Categorie[];
-        //    },
-        //    error => {
-        //        this.isRepostLoading = false;
-        //        console.error(error);
-        //    }
-        //);
     }
 
     private getUserLikes(userId: number) {

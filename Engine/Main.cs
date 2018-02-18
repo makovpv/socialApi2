@@ -26,24 +26,16 @@ namespace SPA.Engine
             {
                 var Activity = "";
 
-                try
-                {
-                    Activity = vkProvider.GetGroupInfo(gc.GroupId.ToString()).Activity;
-                }
-                catch (Exception ex)
-                {
-                    //m_
-                }
+                Activity = vkProvider.GetGroupInfo(gc.GroupId.ToString()).Activity;
                 
                 result.Add(new Categorie {
-                    //Name = keyGroups.SingleOrDefault(s => s.Id == gc.GroupId).Activity,
                     Name = Activity,
                     ActionCount = gc.CounterValue
                 });
             }
 
-            var nn = vkProvider.GetLikers(person.Posts);
-            StoreLikes(context, nn);
+            //var nn = vkProvider.GetLikers(person.Posts);
+            //StoreLikes(context, nn);
 
             var groupedResult =
             result
@@ -59,29 +51,47 @@ namespace SPA.Engine
 
         public static IEnumerable<Categorie> GetUserLikeCategories(
             VKProvider vkProvider,
-            SocialContext context,
-            long userId
-            )
+            //SocialContext context,
+            long userId)
         {
             var result = new List<Categorie>();
 
-            //var groupedLikes =
-            foreach (var group in
-                context.Vk_like
-                    .Where(q => q.UserId == userId)
-                    .GroupBy(g => g.OwnerId)
-                    .Select(n => new GroupCounter
-                    {
-                        GroupId = n.Key,
-                        CounterValue = n.Count()
-                    }))
+            foreach (var group in vkProvider.GetUserGroups(userId))
             {
-                result.Add(new Categorie
+                var actionCount = 0; var progress = 0;
+                var groupPosts = vkProvider.GetWallPosts(-group.Id, false);
+                foreach (var post in groupPosts.Where(x => x.Id.HasValue))
                 {
-                    ActionCount = group.CounterValue,
-                    Name = vkProvider.GetGroupInfo(group.GroupId.ToString()).Activity
-                });
+                    if (vkProvider.IsLikedPost((long)post.Id, userId, -group.Id))
+                        actionCount++;
+
+                    progress++;
+                }
+
+                if (actionCount > 0)
+                    result.Add(new Categorie
+                    {
+                        Name = vkProvider.GetGroupInfo(group.Id.ToString()).Activity,
+                        ActionCount = actionCount
+                    });
             }
+
+            //foreach (var group in
+            //    context.Vk_like
+            //        .Where(q => q.UserId == userId)
+            //        .GroupBy(g => g.OwnerId)
+            //        .Select(n => new GroupCounter
+            //        {
+            //            GroupId = n.Key,
+            //            CounterValue = n.Count()
+            //        }))
+            //{
+            //    result.Add(new Categorie
+            //    {
+            //        ActionCount = group.CounterValue,
+            //        Name = vkProvider.GetGroupInfo(group.GroupId.ToString()).Activity
+            //    });
+            //}
 
             return result;
         }

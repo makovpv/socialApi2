@@ -80,6 +80,14 @@ namespace SPA.Engine
             }
         }
 
+        internal IEnumerable<VkNet.Model.Group> GetUserGroups(long userId)
+        {
+            return api.Groups.Get(new GroupsGetParams
+            {
+                UserId = userId
+            });
+        }
+
         private Person GetPerson(User user)
         {
             var person = new Person
@@ -103,7 +111,7 @@ namespace SPA.Engine
                 
             try
             {
-                person.Posts = GetaAllWallPosts(user.Id);
+                person.Posts = GetWallPosts(user.Id, true);
 
                 foreach (var group in
                     person.Posts.Where(p =>
@@ -152,9 +160,7 @@ namespace SPA.Engine
             return person;
         }
 
-       
-
-        private IEnumerable<Post> GetaAllWallPosts(long userId)
+        public IEnumerable<Post> GetWallPosts(long ownderId, bool getAllPosts = false)
         {
             const int maxPortionSize = 100;
 
@@ -167,7 +173,7 @@ namespace SPA.Engine
             {
                 wgo = api.Wall.Get(new WallGetParams
                 {
-                    OwnerId = userId,
+                    OwnerId = ownderId,
                     Extended = true,
                     Offset = receivedPostCount,
                     Count = maxPortionSize
@@ -177,10 +183,10 @@ namespace SPA.Engine
 
                 receivedPostCount += Convert.ToUInt64(wgo.WallPosts.Count);
             }
-            while (wgo.TotalCount > receivedPostCount);
+            while (wgo.TotalCount > receivedPostCount && getAllPosts);
 
+            m_logger.Log($"{result.Count} posts in group {ownderId}");
             return result;
-
         }
 
         public IEnumerable<VK_Like> GetLikers(IEnumerable<Post> posts)
@@ -266,6 +272,11 @@ namespace SPA.Engine
                     Activity = g.Activity
                 }).ToList();
 
+        }
+
+        public bool IsLikedPost(long postId, long userId, long? ownerId)
+        {
+            return api.Likes.IsLiked(out bool copied, LikeObjectType.Post, postId, userId, ownerId);
         }
     }
 }
